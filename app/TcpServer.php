@@ -44,6 +44,7 @@ class TcpServer
 
     public function close()
     {
+        /**@var $client Client**/
         foreach ($this->connections as $client) {
             $client->close();
         }

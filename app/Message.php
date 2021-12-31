@@ -18,4 +18,5 @@ class Message
     {
         return sprintf("%d:%s", $this->id, $this->payload);
     }
+
 }

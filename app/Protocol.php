@@ -30,7 +30,7 @@ class Protocol
         for (;;) {
             try {
                 if (! $line = trim($this->client->read("\n")) ) {
-                    break;
+                    continue;
                 }
                 $params = explode(' ', $line);
                 $method = strtolower($params[0]);

@@ -14,6 +14,14 @@ class Channel
         $this->memoryMsgChan = new \Swoole\Coroutine\Channel($maxMemoryMsgSize);
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function getMsg()
     {
         return $this->memoryMsgChan->pop(1);
