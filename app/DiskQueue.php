@@ -171,9 +171,6 @@ class DiskQueue
 
     public function sync()
     {
-        Log::info('sync', $this->name, $this->depth, $this->readFileNum, $this->readPos, $this->writeFileNum, $this->writePos);
-
-
         if ( $this->writeFile ) {
             fflush($this->writeFile);
         }
@@ -288,7 +285,6 @@ class DiskQueue
         }
         $badFn = $this->fileName($this->readFileNum);
         $badRenameFn = $badFn . '.bad';
-        Log::info(sprintf("DISK QUEUE(%s) jump to next file and saving bad file as %s", $this->name, $badRenameFn));
         if (! rename($badFn, $badRenameFn)) {
             Log::info(sprintf("DISK QUEUE(%s) failed to rename bad disk queue file %s to %s", $this->name, $badFn, $badRenameFn));
         }
@@ -350,7 +346,6 @@ class DiskQueue
         if ($oldReadFileNum != $this->nextReadFileNum) {
             $this->syncChan->push(true);
             $fn = $this->fileName($oldReadFileNum);
-            Log::info(sprintf('unlink file %s', $fn));
             if (! unlink($fn) ) {
                 throw new Exception("Unlink file - {$fn}");
             }
@@ -393,7 +388,6 @@ class DiskQueue
      */
     protected function skipToNextRWFile()
     {
-        Log::error('skipToNextRWFile');
         if ( $this->readFile != null ) {
             fclose($this->readFile);
             $this->readFile = null;
@@ -459,13 +453,15 @@ class DiskQueue
             while(! $exit) {
                 if ($this->readFileNum < $this->writeFileNum || $this->readPos < $this->writePos) {
                     if ($this->nextReadPos == $this->readPos) {
-                        if (!$dataRead = $this->readOne()) {
-                            $this->handleReadError();
-                            continue;
-                        }
-                        if ( $this->readChan->push($dataRead) ) {
-                            $this->countSync();
-                            $this->moveForward();
+                        if ($this->readChan->stats()['consumer_num']) { // 当有通道有消费者时候；
+                            if (!$dataRead = $this->readOne()) {
+                                $this->handleReadError();
+                                continue;
+                            }
+                            if ($this->readChan->push($dataRead)) {
+                                $this->countSync();
+                                $this->moveForward();
+                            }
                         }
                     }
                 } else {
