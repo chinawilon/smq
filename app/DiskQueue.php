@@ -464,9 +464,8 @@ class DiskQueue
                             }
                         }
                     }
-                } else {
-                    Coroutine::sleep(0.01); // 如果没有消息就让出调度
                 }
+                Coroutine::sleep(0.01); // 如果没有消息就让出调度
             }
         });
 

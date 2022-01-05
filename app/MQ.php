@@ -13,6 +13,9 @@ class MQ
 
     private Atomic $atomic;
 
+    /**
+     * @throws Exception
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -51,6 +54,9 @@ class MQ
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function loadMetadata()
     {
         $metafile = $this->newMetadataFile();
